@@ -1,0 +1,46 @@
+package com.bloodbank.sbbm.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bloodbank.sbbm.entity.BloodRequest;
+import com.bloodbank.sbbm.service.BloodRequestService;
+
+import jakarta.validation.Valid;
+
+@RestController
+public class BloodRequestController {
+
+	@Autowired
+	BloodRequestService rs;
+	
+	@PostMapping("/saveBloodRequest")
+	public ResponseEntity<BloodRequest> saveBloodRequest(@Valid @RequestBody BloodRequest bloodRequest){
+		return new ResponseEntity<BloodRequest>(rs.addBloodRequest(bloodRequest),HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/getBloodRequestDetails/{requestId}")
+	public ResponseEntity<BloodRequest> fetchBloodRequest(@PathVariable("requestId") int requestId){
+		return new ResponseEntity<BloodRequest>(rs.fetchBloodRequestDetail(requestId), HttpStatus.OK);	
+	}
+	
+	@DeleteMapping("/deleteBloodRequest/{requestId}")
+	public ResponseEntity<String> deleteBloodRequest(@PathVariable("requestId") int requestId){
+		rs.removeBloodRequest(requestId);
+		return new ResponseEntity<String>("<h1>Deleted BloodRequest Record</h1>", HttpStatus.OK);
+	}
+	
+	@PostMapping("/newRequest")
+	public ResponseEntity<String> addNewRequest(@RequestBody BloodRequest bloodRequest, @RequestParam int bloodUserId) {
+		rs.addNewRequest(bloodRequest, bloodUserId);
+		return new ResponseEntity<>("applied new request successfully", HttpStatus.OK);
+	}
+}
